@@ -3,6 +3,10 @@ uuid = "949d951a-ab7d-11e9-1d1b-1f978afc5c7d"
 authors = ["QuantumBFS team"]
 version = "0.1.0"
 
+[deps]
+PrettyPrint = "8162dcfd-2161-5ef2-ae6c-7681170c5f98"
+RBNF = "83ef0002-5b9e-11e9-219b-65bac3c6d69c"
+
 [compat]
 julia = "1"
 
