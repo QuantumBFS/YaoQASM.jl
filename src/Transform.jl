@@ -23,11 +23,11 @@ function index_q(ctx1::Ctx1, reg::Symbol)
         end
         i += span
     end
-    return (i + e for e in 1:span)
+    return Int[i + e for e in 1:span]
 end
 
 function index_q(ctx1::Ctx1, reg::Symbol, ind::Int)
-    (index_q(ctx1, reg)[ind], )
+    Int[index_q(ctx1, reg)[ind]]
 end
 
 
@@ -55,12 +55,39 @@ trans(qasm, ctx) =
                     end
                 app(fn, arg)
             end
-        Struct_explist(hd, nothing) => [rec(hd)]
+        Struct_explist(hd, tl=nothing) => [rec(hd)]
         Struct_explist(hd, tl) => [rec(hd), rec(tl)...]
         Struct_argument(id=Token(str=id), arg=nothing) =>
             index_q(ctx1, Symbol(id))
         Struct_argument(id=Token(str=id), arg=Token(str=int)) =>
             index_q(ctx1, Symbol(id), parse(Int, int))
-        
 
+        Struct_idlist(hd=Token(str=hd), tl=noting) => [Symbol(hd)]
+        Struct_idlist(hd=Token(str=hd), tl) => [Symbol(hd), rec(tl)...]
+        Struct_cx(out1, out2) =>
+            let ref1 = rec(out1),
+                ref2 = rec(out2)
+                :(CX($ref1, $ref2))
+            end
+        Struct_u(in1, in2, in3, out) =>
+            let (a, b, c) = map(rec, (in1, in2, in3)),
+                ref = rec(out)
+                :(U($a, $b, $c, $ref))
+            end
+        Struct_iduop(gate_name = Token(str=gate_name), nothing, out) =>
+            let ref = rec(out),
+                gate_name = Symbol(gate_name)
+                :($gate_name($ref))
+            end
+        Struct_gate(
+            decl = Struct_gatedecl(id=Token(str=fid), args=nothing, outs),
+            goplist = (nothing && Do(goplist=[])) || (goplist && goplist = map(rec, goplist))
+         ) =>
+            let out_ids :: Vector{Symbol} = trans(outs)
+                quote
+                    function $fid($(out_ids...))
+                        $(goplist...)
+                    end
+                end
+            end
     end

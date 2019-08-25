@@ -18,7 +18,7 @@ using Test
     creg syn[2];
     cu1(pi/2) q[0],q[1];
     """
-    @test string_ast((parse_qasm ∘ lex)(src1)) ==
+    @test (string_ast ∘ parse_qasm ∘ lex)(src1) ==
 """YaoQASM.Grammar.Struct_mainprogram(
   ver=Token{real}(str=2.0, lineno=1, colno=1),
   prog=[

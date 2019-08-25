@@ -26,26 +26,26 @@ RBNF.@parser QASMLang begin
 
     # gate
     gate        := [decl=gatedecl, [goplist=goplist].?, '}']
-    gatedecl    := ["gate", id=id, ['(', [arglist1=idlist].?, ')'].?, (arglist2=idlist), '{']
+    gatedecl    := ["gate", id=id, ['(', [args=idlist].?, ')'].?, (outs=idlist), '{']
 
     goplist     = (uop |barrier_ids){*}
-    barrier_ids := ["barrier", ids=idlist, ';']
+    barrier_ids := ["barrier", ids=idlist, ';'] # not impl
     # qop
     qop         = (uop | measure | reset)
-    reset       := ["reset", arg=argument, ';']
-    measure     := ["measure", arg1=argument, "->", arg2=argument, ';']
+    reset       := ["reset", arg=argument, ';'] # not impl
+    measure     := ["measure", arg1=argument, "->", arg2=argument, ';'] # not impl
 
     uop         = (iduop | u | cx)
-    iduop      := [op=id, ['(', [lst1=explist].?, ')'].?, lst2=mixedlist, ';']
-    u          := ['U', '(', carg1=exp, ',', carg2=exp, ',', carg3 = exp, ')', arg=argument, ';']
-    cx         := ["CX", arg1=argument, ',', arg2=argument, ';']
+    iduop      := [gate_name=id, ['(', [args=explist].?, ')'].?, outs=mixedlist, ';']
+    u          := ['U', '(', in1=exp, ',', in2=exp, ',', in3 = exp, ')', out=argument, ';']
+    cx         := ["CX", out1=argument, ',', out2=argument, ';']
 
-    idlist     = [hd=id, tl=[',', idlist].?] #
+    idlist     = [hd=id, tl=[',', idlist].?]
 
-    mixeditem  := [id=id, ['[', arg=nninteger, ']'].?] #
-    mixedlist  = [hd=mixeditem, tl=[(',', mixedlist) % second].?] #
+    mixeditem  := [id=id, ['[', arg=nninteger, ']'].?]
+    mixedlist  = [hd=mixeditem, tl=[(',', mixedlist) % second].?]
 
-    argument   := [id=id, ['[', (arg=nninteger), ']'].?] #
+    argument   := [id=id, ['[', (arg=nninteger), ']'].?]
 
     explist    = [hd=exp, tl=[(',', explist) % second].?]
     pi         := "pi"
@@ -54,7 +54,7 @@ RBNF.@parser QASMLang begin
     neg        := ['-', value=exp]
     exp        := [l=mul, op=('+' |'-'), r=exp]
     mul        := [l=atom, op=('*' | '/'), r=mul]
-    fn         = ("sin" | "cos" | "tan" | "exp" | "ln" | "sqrt")
+    fn         = ("sin" | "cos" | "tan" | "exp" | "ln" | "sqrt") # not impl
 
     # define tokens
     @token
