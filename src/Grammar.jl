@@ -1,10 +1,9 @@
-""" Check https://arxiv.org/pdf/1707.03429.pdf for grammar specification
-"""
-module Grammar
 using RBNF
 using PrettyPrint
 export lex, parse_qasm, Token, print_ast, string_ast
 
+""" Check https://arxiv.org/pdf/1707.03429.pdf for grammar specification
+"""
 struct QASMLang end
 
 second((a, b)) = b
@@ -27,47 +26,35 @@ RBNF.@parser QASMLang begin
 
     # gate
     gate        := [decl=gatedecl, [goplist=goplist].?, '}']
-    gatedecl    := ["gate", id=id, ['(', [arglist1=idlist].?, ')'].?, arglist2=idlist, '{']
+    gatedecl    := ["gate", id=id, ['(', [args=idlist].?, ')'].?, (outs=idlist), '{']
 
     goplist     = (uop |barrier_ids){*}
-    barrier_ids := ["barrier", ids=idlist, ';']
+    barrier_ids := ["barrier", ids=idlist, ';'] # not impl
     # qop
     qop         = (uop | measure | reset)
-    reset       := ["reset", arg=argument, ';']
-    measure     := ["measure", arg1=argument, "->", arg2=argument, ';']
+    reset       := ["reset", arg=argument, ';'] # not impl
+    measure     := ["measure", arg1=argument, "->", arg2=argument, ';'] # not impl
 
     uop         = (iduop | u | cx)
-    iduop      := [op=id, ['(', [lst1=explist].?, ')'].?, lst2=mixedlist, ';']
-    u          := ['U', '(', exprs=explist, ')', arg=argument, ';']
-    cx         := ["CX", arg1=argument, ',', arg2=argument, ';']
+    iduop      := [gate_name=id, ['(', [args=explist].?, ')'].?, outs=mixedlist, ';']
+    u          := ['U', '(', in1=exp, ',', in2=exp, ',', in3 = exp, ')', out=argument, ';']
+    cx         := ["CX", out1=argument, ',', out2=argument, ';']
 
-    idlist     = @direct_recur begin
-        init = id
-        prefix = (recur, (',', id) % second)
-    end
+    idlist     = [hd=id, tl=[',', idlist].?]
 
-    mixeditem   := [id=id, ['[', arg=nninteger, ']'].?]
-    mixedlist   = @direct_recur begin
-        init = mixeditem
-        prefix = (recur, (',', mixeditem) % second)
-    end
+    mixeditem  := [id=id, ['[', arg=nninteger, ']'].?]
+    mixedlist  = [hd=mixeditem, tl=[(',', mixedlist) % second].?]
 
     argument   := [id=id, ['[', (arg=nninteger), ']'].?]
 
-    explist    = @direct_recur begin
-        init = exp
-        prefix = (recur,  (',', exp) % second)
-    end
-
-    atom       = (real | nninteger | "pi" | id | fnexp) | (['(', exp, ')'] % second) | neg
+    explist    = [hd=exp, tl=[(',', explist) % second].?]
+    pi         := "pi"
+    atom       =  (real | nninteger | pi | id | fnexp) | (['(', exp, ')'] % second) | neg
     fnexp      := [fn=fn, '(', arg=exp, ')']
     neg        := ['-', value=exp]
-    exp        = @direct_recur begin
-        init = atom
-        prefix = (recur, binop, atom)
-    end
-    fn         = ("sin" | "cos" | "tan" | "exp" | "ln" | "sqrt")
-    binop      = ('+' | '-' | '*' | '/')
+    exp        := [l=mul, op=('+' |'-'), r=exp]
+    mul        := [l=atom, op=('*' | '/'), r=mul]
+    fn         = ("sin" | "cos" | "tan" | "exp" | "ln" | "sqrt") # not impl
 
     # define tokens
     @token
@@ -91,5 +78,3 @@ end
 
 print_ast = PrettyPrint.pprint
 string_ast = PrettyPrint.pformat
-
-end

@@ -6,6 +6,7 @@ version = "0.1.0"
 [deps]
 PrettyPrint = "8162dcfd-2161-5ef2-ae6c-7681170c5f98"
 RBNF = "83ef0002-5b9e-11e9-219b-65bac3c6d69c"
+Yao = "5872b779-8223-5990-8dd0-5abbb0748c8c"
 
 [compat]
 julia = "1"
