@@ -1,5 +1,5 @@
 module YaoQASM
-include("Grammar.jl")
+include("grammar.jl")
 
 greet() = print("Hello World!")
 
