@@ -22,7 +22,7 @@ RBNF.@parser QASMLang begin
     ifstmt      := ["if", '(', l=id, "==", r=nninteger, ')', body=qop]
     opaque      := ["opaque", id=id, ['(', [arglist1=idlist].?, ')'].? , arglist2=idlist, ';']
     barrier     := ["barrier", value=mixedlist]
-    decl        := [regtype="qreg" | "creg", id=id, '[', int=nninteger, ']', ';']
+    decl        := [regtype=("qreg" | "creg"), id=id, '[', int=nninteger, ']', ';']
 
     # gate
     gate        := [decl=gatedecl, [goplist=goplist].?, '}']
@@ -40,14 +40,15 @@ RBNF.@parser QASMLang begin
     u          := ['U', '(', in1=exp, ',', in2=exp, ',', in3 = exp, ')', out=argument, ';']
     cx         := ["CX", out1=argument, ',', out2=argument, ';']
 
-    idlist     = [hd=id, tl=[',', idlist].?]
+    idlist     := [hd=id, tl=[',', idlist].?]
 
-    mixeditem  := [id=id, ['[', arg=nninteger, ']'].?]
-    mixedlist  = [hd=mixeditem, tl=[(',', mixedlist) % second].?]
+    mixedlist  := [hd=argument, tl=[(',', argument )% second].?]
+    # mixeditem  := [id=id, ['[', arg=nninteger, ']'].?]
+    # mixedlist  := [hd=mixeditem, tl=[(',', mixedlist) % second].?]
 
     argument   := [id=id, ['[', (arg=nninteger), ']'].?]
 
-    explist    = [hd=exp, tl=[(',', explist) % second].?]
+    explist    := [hd=exp, tl=[(',', explist) % second].?]
     pi         := "pi"
     atom       =  (real | nninteger | pi | id | fnexp) | (['(', exp, ')'] % second) | neg
     fnexp      := [fn=fn, '(', arg=exp, ')']

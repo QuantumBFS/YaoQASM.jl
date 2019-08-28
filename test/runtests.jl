@@ -1,5 +1,18 @@
 using YaoQASM.Grammar
+
+
 using Test
+@testset "yao api" begin
+    # single qubit gate
+
+    uh = U(5, 3, π/2, 0, π)
+    @test mat(uh)*im ≈ mat(put(5, 3=>H))
+
+    # cnot gate
+    cn = CX(5, [3], [5])
+    @test mat(cn) == mat(put(5, (3,5)=>ConstGate.CNOT))
+end
+
 
 @testset "YaoQASM.jl" begin
     src1 = """
