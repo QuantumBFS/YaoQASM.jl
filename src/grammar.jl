@@ -9,6 +9,12 @@ struct QASMLang end
 second((a, b)) = b
 second(vec::V) where V <: AbstractArray = vec[2]
 
+struct Struct_bin
+    l
+    op :: RBNF.Token
+    r
+end
+
 RBNF.@parser QASMLang begin
     # define ignorances
     ignore{space}
@@ -40,22 +46,21 @@ RBNF.@parser QASMLang begin
     u          := ['U', '(', in1=exp, ',', in2=exp, ',', in3 = exp, ')', out=argument, ';']
     cx         := ["CX", out1=argument, ',', out2=argument, ';']
 
-    idlist     := [hd=id, tl=[',', idlist].?]
+    idlist     := [hd=id, [',', tl=idlist].?]
 
-    mixedlist  := [hd=argument, tl=[(',', argument )% second].?]
-    # mixeditem  := [id=id, ['[', arg=nninteger, ']'].?]
-    # mixedlist  := [hd=mixeditem, tl=[(',', mixedlist) % second].?]
+    mixedlist  := [hd=argument, [',', tl=mixedlist].?]
 
     argument   := [id=id, ['[', (arg=nninteger), ']'].?]
 
-    explist    := [hd=exp, tl=[(',', explist) % second].?]
+    explist    := [hd=exp, [',', tl=explist].?]
     pi         := "pi"
     atom       =  (real | nninteger | pi | id | fnexp) | (['(', exp, ')'] % second) | neg
     fnexp      := [fn=fn, '(', arg=exp, ')']
     neg        := ['-', value=exp]
-    exp        := [l=mul, op=('+' |'-'), r=exp]
-    mul        := [l=atom, op=('*' | '/'), r=mul]
-    fn         = ("sin" | "cos" | "tan" | "exp" | "ln" | "sqrt") # not impl
+
+    exp        = [l=mul,  [op=('+' |'-'), r=exp].?] => _.op === nothing ? _.l : Struct_bin(_.l, _.op, _.r)
+    mul        = [l=atom, [op=('*' | '/'), r=mul].?] => _.op === nothing ? _.l : Struct_bin(_.l, _.op, _.r)
+    fn         = ("sin" | "cos" | "tan" | "exp" | "ln" | "sqrt")
 
     # define tokens
     @token
