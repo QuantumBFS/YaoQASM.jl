@@ -1,4 +1,5 @@
-using YaoQASM
+using YaoQASM, Yao
+using YaoQASM: U, CX, RESET, Barrier, MEASURE
 
 
 using Test
@@ -11,14 +12,27 @@ using Test
     # cnot gate
     cn = CX(5, [3], [5])
     @test mat(cn) == mat(put(5, (3,5)=>ConstGate.CNOT))
-end
 
+    # reset gate
+    rst = RESET(5, [3,5])
+    @test rst isa Measure
+    rst = RESET(5, 3)
+    @test rst isa Measure
+
+    @test Barrier{5}() isa Barrier
+
+    ba = BitArray([false, false, false])
+    fl = MEASURE(5, [3,4], view(ba, [2,3]))
+    @test fl isa YaoQASM.FlushResults
+    product_state(bit"11011") |> fl
+    @test ba == BitArray([0,0,1])
+end
 
 @testset "YaoQASM.jl" begin
     src1 = """
     OPENQASM 2.0;
 
-    gate cu1(lambda) a,b
+    gate cu1(theta) a,b
     {
         U(0,0,theta/2) a;
         CX a,b;
@@ -38,7 +52,7 @@ end
     YaoQASM.Grammar.Struct_gate(
       decl=YaoQASM.Grammar.Struct_gatedecl(
         id=Token{id}(str=cu1, lineno=3, colno=3),
-        arglist1=Token{id}(str=lambda, lineno=3, colno=3),
+        arglist1=Token{id}(str=theta, lineno=3, colno=3),
         arglist2=(
           Token{id}(str=a, lineno=3, colno=3),
           Token{id}(str=b, lineno=3, colno=3),
@@ -134,4 +148,34 @@ end
   ],
 )"""
     # Write your own tests here.
+end
+
+@testset "parse" begin
+    src1 = """
+    OPENQASM 2.0;
+
+    gate cu1(theta) a,b
+    {
+        U(0,0,theta/2) a;
+        CX a,b;
+        U(0,0,-theta/2) b;
+    }
+
+    qreg q[3];
+    qreg a[2];
+    creg c[3];
+    creg syn[2];
+    cu1(pi/2) q[0],q[1];
+    """
+    circ = @eval $(trans(parse_qasm(lex(src1))))
+    @show circ
+    @test mat(circ) ≈ mat(
+        chain(put(5, 1=>chain(rot(Z, π/4), rot(Y, 0.0), rot(Z, 0.0))),
+            control(5, 1, 2=>X),
+            put(5, 2=>chain(rot(Z, -π/4), rot(Y, 0.0), rot(Z, 0.0)))
+            ))
+    @test syn isa BitArray && length(syn) == 2
+    @test c isa BitArray && length(c) == 3
+    @test q isa Vector && length(q) == 3
+    @test a isa Vector && length(a) == 2
 end

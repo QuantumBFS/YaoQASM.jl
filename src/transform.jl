@@ -29,7 +29,7 @@ struct Session
 end
 
 function declare_q!(sess::Session, reg::Symbol, amount::Int)
-    rng(a, b) = a : a + b
+    rng(a, b) = a+1 : a + b
     qbits = collect(rng(sess.n.x, amount))
     sess.n.x += amount
     :($reg = Int[$(qbits...)])
@@ -134,7 +134,7 @@ function trans(qasm, sess::Session)
                 fid = Symbol(fid)
                 quote
                     function $fid(($(args...), ), $(out_ids...))
-                        $(goplist...)
+                        chain($(goplist...))
                     end
                 end
             end
