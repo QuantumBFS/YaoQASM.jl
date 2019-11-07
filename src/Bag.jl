@@ -1,3 +1,5 @@
+using YaoBase: AbstractRegister
+
 # This file is copied from YaoExtensions for convenience,
 # will be considerd to move to YaoBlocks!
 export AbstractBag
