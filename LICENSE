@@ -180,11 +180,7 @@ Copyright (c) 2019 QuantumBFS team
    APPENDIX: How to apply the Apache License to your work.
 
       To apply the Apache License to your work, attach the following
-<<<<<<< HEAD
-      boilerplate notice, with the fields enclosed by brackets "{}"
-=======
       boilerplate notice, with the fields enclosed by brackets "[]"
->>>>>>> 1d9937860fca53a56eb32039f74ca4e4c7bf571d
       replaced with your own identifying information. (Don't include
       the brackets!)  The text should be enclosed in the appropriate
       comment syntax for the file format. We also recommend that a
@@ -192,11 +188,7 @@ Copyright (c) 2019 QuantumBFS team
       same "printed page" as the copyright notice for easier
       identification within third-party archives.
 
-<<<<<<< HEAD
-   Copyright [year] [fullname]
-=======
-   Copyright [yyyy] [name of copyright owner]
->>>>>>> 1d9937860fca53a56eb32039f74ca4e4c7bf571d
+   Copyright 2019 QuantumBFS
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
