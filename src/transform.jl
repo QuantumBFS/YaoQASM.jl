@@ -1,6 +1,5 @@
 using MLStyle
 using MLStyle.Record
-using Yao
 export trans
 
 @as_record Token

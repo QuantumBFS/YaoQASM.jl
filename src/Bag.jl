@@ -17,11 +17,11 @@ YaoBlocks.isreflexive(bag::AbstractBag) = isreflexive(content(bag))
 YaoBlocks.isunitary(bag::AbstractBag) = isunitary(content(bag))
 YaoBlocks.occupied_locs(bag::AbstractBag) = occupied_locs(content(bag))
 
-function Yao.AD.apply_back!(state, b::AbstractBag, collector)
-    Yao.AD.apply_back!(state, content(b), collector)
+function YaoBlocks.AD.apply_back!(state, b::AbstractBag, collector)
+    YaoBlocks.AD.apply_back!(state, content(b), collector)
 end
-function Yao.AD.mat_back!(::Type{T}, b::AbstractBag, adjy, collector) where T
-    Yao.AD.mat_back!(T, content(b), adjy, collector)
+function YaoBlocks.AD.mat_back!(::Type{T}, b::AbstractBag, adjy, collector) where T
+    YaoBlocks.AD.mat_back!(T, content(b), adjy, collector)
 end
 
 export Bag, enable_block!, disable_block!, setcontent!, isenabled

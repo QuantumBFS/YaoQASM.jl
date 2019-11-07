@@ -1,4 +1,4 @@
-using Yao
+using YaoBlocks
 using LuxurySparse: IMatrix
 using BitBasis: readbit
 
@@ -50,8 +50,8 @@ The barrier instruction prevents optimizations from reordering gates across its 
 line.
 """
 struct Barrier{N} <: PrimitiveBlock{N} end
-Yao.mat(b::Barrier{N}) where N = IMatrix{1<<N}()
-Yao.getiparams(b::Barrier) = ()
+YaoBlocks.mat(b::Barrier{N}) where N = IMatrix{1<<N}()
+YaoBlocks.getiparams(b::Barrier) = ()
 
 include("Bag.jl")
 """
@@ -68,10 +68,10 @@ struct FlushResults{N,C,TT, MT<:Measure{N,C}} <: AbstractBag{MT,N}
     end
 end
 
-function Yao.apply!(reg::AbstractRegister, fl::FlushResults{N,C}) where {N, C}
+function YaoBlocks.apply!(reg::AbstractRegister, fl::FlushResults{N,C}) where {N, C}
     throw(NotImplementedError())
 end
-function Yao.apply!(reg::AbstractRegister{1}, fl::FlushResults{N,C}) where {N, C}
+function YaoBlocks.apply!(reg::AbstractRegister{1}, fl::FlushResults{N,C}) where {N, C}
     out = apply!(reg, fl.content)
     res = fl.content.results[]
     for i=1:C
