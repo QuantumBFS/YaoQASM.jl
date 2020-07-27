@@ -1,7 +1,7 @@
 name = "YaoQASM"
 uuid = "949d951a-ab7d-11e9-1d1b-1f978afc5c7d"
 authors = ["QuantumBFS team"]
-version = "0.1.0"
+version = "0.1.1"
 
 [deps]
 BitBasis = "50ba71b6-fa0f-514d-ae9a-0916efc90dcf"
