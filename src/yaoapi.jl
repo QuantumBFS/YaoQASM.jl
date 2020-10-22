@@ -30,7 +30,7 @@ The reset operation in Open QASM, note here, instead of keeping the remaining bi
 we measure the target qubit directly. See `measure_collapseto!` in `Yao.jl` for detail.
 """
 function RESET(nbits::Int, locs::Locs)
-    Measure(nbits; locs=locs, collapseto=0)
+    Measure(nbits; locs=locs, resetto=(measure(zero_state(nbits), nshots=1)[1]))
 end
 
 """
