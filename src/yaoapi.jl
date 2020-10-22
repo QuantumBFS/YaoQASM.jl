@@ -1,6 +1,6 @@
 using YaoBlocks
 using LuxurySparse: IMatrix
-using BitBasis
+using BitBasis: readbit,bcat,@bit_str
 
 Locs = Union{Vector{Int}, Int}
 """
