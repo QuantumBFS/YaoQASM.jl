@@ -1,4 +1,4 @@
-using YaoBlocks
+using YaoBlocks, YaoArrayRegister
 using LuxurySparse: IMatrix
 using BitBasis: readbit
 
