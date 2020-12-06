@@ -1,6 +1,6 @@
 using YaoBlocks
 using LuxurySparse: IMatrix
-using BitBasis: readbit
+using BitBasis: readbit,bcat,@bit_str
 
 Locs = Union{Vector{Int}, Int}
 """
@@ -30,7 +30,7 @@ The reset operation in Open QASM, note here, instead of keeping the remaining bi
 we measure the target qubit directly. See `measure_collapseto!` in `Yao.jl` for detail.
 """
 function RESET(nbits::Int, locs::Locs)
-    Measure(nbits; locs=locs, collapseto=0)
+    Measure(nbits; locs=locs, resetto=bcat(bit"0" for i in 1:nbits))
 end
 
 """
